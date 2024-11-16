@@ -7,7 +7,7 @@ import { Menu, X, UserCircle, LogOut, ShoppingCart } from "lucide-react";
 import Login from "../Pages/Login";
 import Register from "../Pages/Register";
 import Cart from "./Cart";
-import midlandLogo from "../assets/midland.jpg";
+import midlandLogo from "../assets/midland.png";
 
 const Navbar = ({ data, setData, loggedIn, setLoggedIn }) => {
   const [prevScrollPos, setPrevScrollPos] = useState(0);
@@ -145,7 +145,7 @@ const Navbar = ({ data, setData, loggedIn, setLoggedIn }) => {
     <>
       <nav
         ref={navbarRef}
-        className={`flex py-6 cursor-auto md:py-0 select-none rounded-2xl m-2 font-semibold bg-[#d5dbde] text-md font-['Onest',sans-serif] justify-between items-center fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ${
+        className={`flex py-6 cursor-auto md:py-0 select-none rounded-2xl m-2 font-semibold bg-[#d5dbde] text-md font-['Onest',sans-serif] justify-between items-center fixed top-0 left-0 overflow-visible right-0 z-50 transition-transform duration-300 ${
           visible ? "translate-y-0" : "-translate-y-full"
         }`}
       >
@@ -156,10 +156,10 @@ const Navbar = ({ data, setData, loggedIn, setLoggedIn }) => {
           <img
             src={midlandLogo}
             alt="Midland Logo"
-            className="w-12 h-12 rounded-xl"
+            className="w-20 md:w-16 h-12 md:h-20 rounded-xl"
           />
           <div>
-            Midland
+            <h1 className="hidden lg:inline text-gray-700">Midland</h1>
             <span className="text-red-400 hidden lg:inline">Real-Estate</span>
           </div>
         </Link>
@@ -211,9 +211,10 @@ const Navbar = ({ data, setData, loggedIn, setLoggedIn }) => {
                 </div>
               </button>
               {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-100">
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-100 z-50">
                   <Link
                     to="/profile"
+                    onClick={() => setShowUserMenu(false)}
                     className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-all duration-200"
                   >
                     <UserCircle size={16} className="mr-3" />
@@ -221,7 +222,7 @@ const Navbar = ({ data, setData, loggedIn, setLoggedIn }) => {
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-all duration-200"
+                    className="flex items-center w-full px-4 py-2 text-red-500 hover:bg-gray-50 transition-all duration-200"
                   >
                     <LogOut size={16} className="mr-3" />
                     <span className="font-medium">Logout</span>

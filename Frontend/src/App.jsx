@@ -20,7 +20,14 @@ const App = () => {
   const fetchProperties = async () => {
     try {
       const response = await axios.get("http://localhost:4000/api/properties");
-      setProperties(response.data);
+      if (response.data) {
+        setProperties(
+          response.data.map((property) => ({
+            ...property,
+            id: property._id || property.id, // Ensure id exists by using _id or id
+          }))
+        );
+      }
     } catch (error) {
       console.error("Error fetching properties:", error);
     } finally {

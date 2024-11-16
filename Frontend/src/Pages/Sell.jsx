@@ -76,10 +76,11 @@ const Sell = ({ refreshProperties, isLoggedIn }) => {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
+      const userData = JSON.parse(localStorage.getItem("userData"));
+      const token = userData?.token;
 
       if (!token) {
-        showToast("Please login to list a property", "error");
+        showToast("Please login to list a property");
         navigate("/login");
         return;
       }
@@ -89,39 +90,32 @@ const Sell = ({ refreshProperties, isLoggedIn }) => {
         images: images,
       };
 
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
       const response = await axios.post(
         "http://localhost:4000/api/properties",
         propertyData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        config
       );
 
-      if (response.status === 201) {
+      if (response.data) {
         showToast("Property listed successfully!", "success");
         refreshProperties();
         navigate("/buy");
       }
     } catch (error) {
-      console.error("Error submitting property:", error);
-      showToast(
-        error.response?.data?.error ||
-          "Error submitting property listing. Please try again."
-      );
-
-      if (error.response?.status === 401) {
-        navigate("/login");
-      }
+      showToast(error.response?.data?.error || "Error listing property");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("authToken");
     if (!token) {
       showToast("Please login to list a property", "error");
       navigate("/login");
