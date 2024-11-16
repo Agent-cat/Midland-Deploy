@@ -19,6 +19,7 @@ import axios from "axios";
 import { useToast } from "../Context/ToastContext";
 
 const PropertyDetails = ({ properties }) => {
+  const url = "https://midland-deploy.onrender.com";
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -69,7 +70,7 @@ const PropertyDetails = ({ properties }) => {
 
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/properties/cart/${userData._id}`
+          `${url}/api/properties/cart/${userData._id}`
         );
         setIsInCart(
           response.data.some((item) => item._id === propertyData._id)
@@ -192,7 +193,7 @@ const PropertyDetails = ({ properties }) => {
 
     setLoading(true);
     try {
-      await axios.post("http://localhost:4000/api/properties/cart/add", {
+      await axios.post(`${url}/api/properties/cart/add`, {
         userId: userData._id,
         propertyId: propertyData._id,
       });
@@ -215,7 +216,7 @@ const PropertyDetails = ({ properties }) => {
 
     setIsSubmitting(true);
     try {
-      await axios.post("http://localhost:4000/api/contacts", {
+      await axios.post(`${url}/api/contacts`, {
         ...contactForm,
         propertyId: propertyData._id,
         userId: userData?._id,

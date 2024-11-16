@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [trendingProperties, setTrendingProperties] = useState([]);
-
+  const url = "https://midland-deploy.onrender.com";
   useEffect(() => {
     const videoElement = document.getElementById("backgroundVideo");
     videoElement.addEventListener("loadeddata", () => {
@@ -18,9 +18,7 @@ const Home = () => {
 
     const fetchTrendingProperties = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:4000/api/properties"
-        );
+        const response = await axios.get(`${url}/api/properties`);
         setTrendingProperties(response.data.slice(0, 3));
       } catch (error) {
         console.error("Error fetching properties:", error);

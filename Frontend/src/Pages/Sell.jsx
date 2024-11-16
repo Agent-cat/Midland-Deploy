@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "../Context/ToastContext";
 
 const Sell = ({ refreshProperties, isLoggedIn }) => {
+  const url = "https://midland-deploy.onrender.com";
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -55,7 +56,7 @@ const Sell = ({ refreshProperties, isLoggedIn }) => {
         formData.append("upload_preset", "midland_property");
 
         const response = await axios.post(
-          `https://api.cloudinary.com/v1_1/vishnu2005/image/upload`,
+          `${url}/api/cloudinary/upload`,
           formData
         );
         return response.data.secure_url;
@@ -97,7 +98,7 @@ const Sell = ({ refreshProperties, isLoggedIn }) => {
       };
 
       const response = await axios.post(
-        "http://localhost:4000/api/properties",
+        `${url}/api/properties`,
         propertyData,
         config
       );
@@ -118,7 +119,7 @@ const Sell = ({ refreshProperties, isLoggedIn }) => {
     const token = localStorage.getItem("authToken");
     if (!token) {
       showToast("Please login to list a property", "error");
-      navigate("/login");
+      navigate("/loginrequired");
     }
   }, [navigate, showToast]);
 

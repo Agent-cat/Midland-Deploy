@@ -7,6 +7,7 @@ import gsap from "gsap";
 import { useToast } from "../Context/ToastContext";
 
 const Toast = ({ message, type }) => {
+  const url = "https://midland-deploy.onrender.com";
   useGSAP(() => {
     gsap.fromTo(
       ".toast-animation",
@@ -79,16 +80,13 @@ const Register = ({ onSuccess, onSwitchToLogin }) => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:4000/api/auth/signup",
-        {
-          username,
-          email,
-          password,
-          phno,
-          profilePicture,
-        }
-      );
+      const response = await axios.post(`${url}/api/auth/signup`, {
+        username,
+        email,
+        password,
+        phno,
+        profilePicture,
+      });
       showToast("Registration successful!", "success");
       onSuccess();
     } catch (error) {

@@ -16,6 +16,7 @@ import {
 import { useToast } from "../Context/ToastContext";
 
 const AdminPanel = ({ properties, refreshProperties }) => {
+  const url = "https://midland-deploy.onrender.com";
   const [activeTab, setActiveTab] = useState("properties");
   const [users, setUsers] = useState([]);
   const [agents, setAgents] = useState([]);
@@ -37,7 +38,7 @@ const AdminPanel = ({ properties, refreshProperties }) => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.post("http://localhost:4000/api/auth/users");
+      const response = await axios.post(`${url}/api/auth/users`);
       const allUsers = response.data;
       setUsers(allUsers.filter((user) => user.role === "client"));
       setAgents(allUsers.filter((user) => user.role === "agent"));
@@ -48,7 +49,7 @@ const AdminPanel = ({ properties, refreshProperties }) => {
 
   const fetchContacts = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/api/contacts");
+      const response = await axios.get(`${url}/api/contacts`);
       setContacts(response.data);
     } catch (error) {
       console.error("Error fetching contacts:", error);
@@ -65,9 +66,7 @@ const AdminPanel = ({ properties, refreshProperties }) => {
 
     setLoading(true);
     try {
-      await axios.delete(
-        `http://localhost:4000/api/properties/${propertyToDelete._id}`
-      );
+      await axios.delete(`${url}/api/properties/${propertyToDelete._id}`);
       refreshProperties();
       setShowDeleteModal(false);
       setPropertyToDelete(null);
@@ -81,7 +80,7 @@ const AdminPanel = ({ properties, refreshProperties }) => {
 
   const handleStatusUpdate = async (contactId, newStatus) => {
     try {
-      await axios.put(`http://localhost:4000/api/contacts/${contactId}`, {
+      await axios.put(`${url}/api/contacts/${contactId}`, {
         status: newStatus,
       });
       fetchContacts();

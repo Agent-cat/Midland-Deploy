@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useToast } from "../Context/ToastContext";
 
 const Profile = ({ data, setData }) => {
+  const url = "https://midland-deploy.onrender.com";
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -29,7 +30,7 @@ const Profile = ({ data, setData }) => {
 
   const fetchUserProperties = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/api/properties/`);
+      const response = await axios.get(`${url}/api/properties/`);
       setUserProperties(
         response.data.filter((prop) => prop.ownerName === data.name)
       );
@@ -68,7 +69,7 @@ const Profile = ({ data, setData }) => {
     setLoading(true);
     try {
       const response = await axios.put(
-        `http://localhost:4000/api/auth/update/${data._id}`,
+        `${url}/api/auth/update/${data._id}`,
         formData
       );
       setData(response.data);

@@ -156,7 +156,7 @@ const Navbar = ({ data, setData, loggedIn, setLoggedIn }) => {
           <img
             src={midlandLogo}
             alt="Midland Logo"
-            className="w-20 md:w-16 h-12 md:h-20 rounded-xl"
+            className="w-16 md:w-16 h-10 md:h-16 rounded-xl"
           />
           <div>
             <h1 className="hidden lg:inline text-gray-700">Midland</h1>
@@ -248,9 +248,19 @@ const Navbar = ({ data, setData, loggedIn, setLoggedIn }) => {
           )}
         </div>
 
-        <button onClick={toggleMenu} className="md:hidden mr-4">
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="md:hidden flex items-center gap-8 mr-4">
+          {loggedIn && (
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="flex items-center text-gray-700"
+            >
+              <ShoppingCart size={30} color="red" />
+            </button>
+          )}
+          <button onClick={toggleMenu}>
+            {isMenuOpen ? <X size={30} /> : <Menu size={30} />}
+          </button>
+        </div>
       </nav>
 
       <div

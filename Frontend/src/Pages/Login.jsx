@@ -32,6 +32,7 @@ const Login = ({
   onSuccess,
   onSwitchToRegister,
 }) => {
+  const url = "https://midland-deploy.onrender.com";
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -50,7 +51,7 @@ const Login = ({
         },
       };
       const { data: response } = await axios.post(
-        "http://localhost:4000/api/auth/signin",
+        `${url}/api/auth/signin`,
         {
           email,
           password,
