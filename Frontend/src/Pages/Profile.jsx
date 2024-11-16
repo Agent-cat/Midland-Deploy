@@ -23,15 +23,13 @@ const Profile = ({ data, setData }) => {
     if (!data) {
       navigate("/login");
     } else {
-      fetchUserProperties();
+      //fetchUserProperties();
     }
   }, [data, navigate]);
 
   const fetchUserProperties = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:4000/api/properties/user/${data._id}`
-      );
+      const response = await axios.get(`http://localhost:4000/api/properties/`);
       setUserProperties(
         response.data.filter((prop) => prop.ownerName === data.name)
       );
@@ -270,6 +268,11 @@ const Profile = ({ data, setData }) => {
             </div>
           </motion.div>
         </div>
+      </div>
+
+      <div className="mt-8">
+        <h2 className="text-2xl font-semibold mb-4">My Listed Properties</h2>
+        {/* <ListedProperties userId={data._id} /> */}
       </div>
     </div>
   );

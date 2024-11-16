@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../Context/ToastContext";
 
-const Sell = ({ refreshProperties }) => {
+const Sell = ({ refreshProperties, isLoggedIn }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -76,6 +76,14 @@ const Sell = ({ refreshProperties }) => {
     setLoading(true);
 
     try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        showToast("Please login to list a property", "error");
+        navigate("/login");
+        return;
+      }
+
       const propertyData = {
         ...formData,
         images: images,
@@ -83,21 +91,42 @@ const Sell = ({ refreshProperties }) => {
 
       const response = await axios.post(
         "http://localhost:4000/api/properties",
-        propertyData
+        propertyData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
+
       if (response.status === 201) {
+        showToast("Property listed successfully!", "success");
         refreshProperties();
-        alert("Property listed successfully!");
         navigate("/buy");
       }
     } catch (error) {
+      console.error("Error submitting property:", error);
       showToast(
-        error.response?.data?.message || "Error submitting property listing"
+        error.response?.data?.error ||
+          "Error submitting property listing. Please try again."
       );
+
+      if (error.response?.status === 401) {
+        navigate("/login");
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      showToast("Please login to list a property", "error");
+      navigate("/login");
+    }
+  }, [navigate, showToast]);
 
   return (
     <div className="container mx-auto mt-24 p-8  rounded-xl shadow-lg">

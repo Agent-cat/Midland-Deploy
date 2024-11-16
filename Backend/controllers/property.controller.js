@@ -5,29 +5,15 @@ const mongoose = require("mongoose");
 
 const postproperty = asyncHandler(async (req, res) => {
   try {
-    const existingProperty = await Property.findOne({
-      name: req.body.name,
-      location: req.body.location,
-      address: req.body.address,
-    });
+    const userId = req.user.id;
 
-    if (existingProperty) {
-      return res.status(409).json({
-        message: "Property already exists",
-        property: existingProperty,
-      });
-    }
+    const propertyData = {
+      ...req.body,
+      listedBy: userId,
+    };
 
-    const property = await Property.create(req.body);
-
-    if (property) {
-      res.status(201).json({
-        message: "Property created successfully",
-        property: property,
-      });
-    } else {
-      res.status(400).json({ error: "Invalid property data" });
-    }
+    const property = await Property.create(propertyData);
+    res.status(201).json(property);
   } catch (error) {
     res
       .status(500)
@@ -188,6 +174,30 @@ const getCart = asyncHandler(async (req, res) => {
   }
 });
 
+const getUserProperties = asyncHandler(async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Ensure userId is valid
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    const properties = await Property.find({ listedBy: userId })
+      .sort({ createdAt: -1 })
+      .lean(); // Using lean() for better performance
+
+    // Always send an array, even if empty
+    res.status(200).json(properties || []);
+  } catch (error) {
+    console.error("Error in getUserProperties:", error);
+    res.status(500).json({
+      error: "Error fetching user properties",
+      details: error.message,
+    });
+  }
+});
+
 module.exports = {
   postproperty,
   getallproperties,
@@ -197,4 +207,5 @@ module.exports = {
   addToCart,
   removeFromCart,
   getCart,
+  getUserProperties,
 };

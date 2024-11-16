@@ -41,6 +41,11 @@ const propertySchema = new mongoose.Schema(
     bedroom: { type: Number, default: 0 },
     bathroom: { type: Number, default: 0 },
     kitchen: { type: Number, default: 0 },
+    listedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   {
     timestamps: true,

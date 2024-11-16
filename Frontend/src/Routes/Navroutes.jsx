@@ -44,7 +44,13 @@ const Navroutes = ({
       />
       <Route
         path="/property/:id"
-        element={<PropertyDetails properties={properties} />}
+        element={
+          loggedIn ? (
+            <PropertyDetails properties={properties} />
+          ) : (
+            <LoginRequired />
+          )
+        }
       />
       <Route
         path="/pricing"

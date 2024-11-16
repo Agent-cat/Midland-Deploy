@@ -7,6 +7,7 @@ import { Menu, X, UserCircle, LogOut, ShoppingCart } from "lucide-react";
 import Login from "../Pages/Login";
 import Register from "../Pages/Register";
 import Cart from "./Cart";
+import midlandLogo from "../assets/midland.jpg";
 
 const Navbar = ({ data, setData, loggedIn, setLoggedIn }) => {
   const [prevScrollPos, setPrevScrollPos] = useState(0);
@@ -150,10 +151,17 @@ const Navbar = ({ data, setData, loggedIn, setLoggedIn }) => {
       >
         <Link
           to="/"
-          className="md:ml-4 flex gap-2 text-red-400 ml-8 md:text-gray-700 text-2xl font-bold"
+          className="md:ml-4 flex items-center gap-2 text-red-400 ml-8 md:text-gray-700 text-2xl font-bold"
         >
-          Midland
-          <span className="text-red-400  hidden md:flex">Real-Estate</span>
+          <img
+            src={midlandLogo}
+            alt="Midland Logo"
+            className="w-12 h-12 rounded-xl"
+          />
+          <div>
+            Midland
+            <span className="text-red-400 hidden lg:inline">Real-Estate</span>
+          </div>
         </Link>
         <div className="hidden md:flex gap-8 relative nav-links">
           {Navlinks.map((link, index) => (
