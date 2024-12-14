@@ -41,6 +41,10 @@ const Register = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [toast, setToast] = useState({ show: false, message: "", type: "" });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [sessionId, setSessionId] = useState("");
+  const [otpVerified, setOtpVerified] = useState(false);
 
   const CLOUDINARY_API_KEY = "312718115279244";
   const CLOUDINARY_API_SECRET = "voYe5Ddk4KoVI65lIT6DZ_X10zs";
@@ -121,10 +125,61 @@ const Register = () => {
     return true;
   };
 
+  const validatePhoneNumber = (phone) => {
+    const phoneRegex = /^\d{10}$/;
+    if (!phone) {
+      return false;
+    }
+    if (!phoneRegex.test(phone)) {
+      return false;
+    }
+    return true;
+  };
+
+  const handleSendOTP = async () => {
+    if (!validatePhoneNumber(phno)) {
+      showToast("Please enter a valid 10-digit phone number", "error");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await axios.post(
+        "http://localhost:4000/api/auth/send-otp",
+        { phoneNumber: phno }
+      );
+      setSessionId(response.data.sessionId);
+      setOtpSent(true);
+      showToast("OTP sent successfully!", "success");
+    } catch (error) {
+      showToast(error.response?.data?.error || "Failed to send OTP", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async () => {
+    try {
+      setLoading(true);
+      await axios.post("http://localhost:4000/api/auth/verify-otp", {
+        sessionId,
+        otp,
+      });
+      setOtpVerified(true);
+      showToast("Phone number verified successfully!", "success");
+    } catch (error) {
+      showToast(error.response?.data?.error || "Invalid OTP", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) {
+    if (!validateForm()) return;
+    if (!otpVerified) {
+      showToast("Please verify your phone number", "error");
       return;
     }
 
@@ -244,13 +299,62 @@ const Register = () => {
             >
               Phone Number
             </label>
-            <input
-              className="shadow appearance-none border border-gray-300 rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="phno"
-              type="tel"
-              placeholder="Phone Number"
-              onChange={(e) => setPhno(e.target.value)}
-            />
+            <div className="relative">
+              <input
+                type="tel"
+                pattern="[0-9]{10}"
+                required
+                value={phno}
+                onChange={(e) => setPhno(e.target.value)}
+                className="w-full px-4 py-2 border rounded-lg"
+                placeholder="Phone Number"
+                disabled={otpVerified}
+              />
+              {!otpSent && !otpVerified && (
+                <button
+                  type="button"
+                  onClick={handleSendOTP}
+                  disabled={loading}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-red-500 text-white rounded-md text-sm"
+                >
+                  Send OTP
+                </button>
+              )}
+              {otpVerified && (
+                <Check className="absolute right-2 top-1/2 -translate-y-1/2 text-green-500" />
+              )}
+            </div>
+
+            {otpSent && !otpVerified && (
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="w-full px-4 py-2 border rounded-lg"
+                  placeholder="Enter OTP"
+                  maxLength={6}
+                />
+                <div className="flex justify-between">
+                  <button
+                    type="button"
+                    onClick={handleVerifyOTP}
+                    disabled={loading}
+                    className="px-4 py-2 bg-red-500 text-white rounded-lg"
+                  >
+                    Verify OTP
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSendOTP}
+                    disabled={loading}
+                    className="px-4 py-2 text-red-500"
+                  >
+                    Resend OTP
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
           <div className="mb-4">
             <label
