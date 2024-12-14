@@ -836,7 +836,7 @@ const AdminPanel = ({ properties, refreshProperties }) => {
                                   </p>
                                   <p className="flex items-center gap-2">
                                     <Phone size={14} />
-                                    {view.userId.phno || "No phone number"}
+                                    {view.phoneNumber || "No phone number"}
                                   </p>
                                   <p className="flex items-center gap-2">
                                     <Clock size={14} />

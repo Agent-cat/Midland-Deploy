@@ -158,38 +158,53 @@ const getCart = asyncHandler(async (req, res) => {
   res.status(200).json(user.cart);
 });
 
-const recordPropertyView = async (req, res) => {
-  try {
-    const { userId, propertyId, phoneNumber } = req.body;
+const checkExistingView = asyncHandler(async (req, res) => {
+  const { propertyId, userId } = req.params;
 
-    // Update user's recently viewed properties
-    await User.findByIdAndUpdate(userId, {
-      $addToSet: { recentlyViewed: propertyId },
-    });
-
-    // Create property view record
-    const view = await PropertyView.create({
-      user: userId,
-      property: propertyId,
-      phoneNumber,
-      status: "pending",
-      viewedAt: new Date(),
-    });
-
-    await view.populate("user", "username email");
-    await view.populate("property", "name location");
-
-    res.status(201).json({
-      message: "Property view recorded successfully",
-      view,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Failed to record property view",
-      error: error.message,
-    });
+  const property = await Property.findById(propertyId);
+  if (!property) {
+    res.status(404);
+    throw new Error("Property not found");
   }
-};
+
+  const existingView = await PropertyView.findOne({
+    property: propertyId,
+    user: userId,
+  });
+
+  res.json({ hasViewed: !!existingView });
+});
+
+const postViews = asyncHandler(async (req, res) => {
+  const { userId, phoneNumber } = req.body;
+  const propertyId = req.params.propertyId;
+
+  // Check if view already exists
+  const existingView = await PropertyView.findOne({
+    propertyId,
+    userId,
+  });
+
+  if (existingView) {
+    return res.status(200).json(existingView);
+  }
+
+  // Create new view record with phone number
+  const view = await PropertyView.create({
+    propertyId,
+    userId,
+    phoneNumber,
+    viewedAt: new Date(),
+  });
+
+  // Update property isViewed status and add view reference
+  await Property.findByIdAndUpdate(propertyId, {
+    isViewed: true,
+    $push: { views: view._id },
+  });
+
+  res.status(201).json(view);
+});
 
 module.exports = {
   postproperty,
@@ -200,5 +215,6 @@ module.exports = {
   addToCart,
   removeFromCart,
   getCart,
-  recordPropertyView,
+  checkExistingView,
+  postViews,
 };

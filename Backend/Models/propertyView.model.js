@@ -11,6 +11,16 @@ const propertyViewSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  phoneNumber: {
+    type: String,
+    required: [true, "Phone number is required"],
+    validate: {
+      validator: function (v) {
+        return /^\d{10}$/.test(v);
+      },
+      message: (props) => `${props.value} is not a valid phone number!`,
+    },
+  },
   viewedAt: {
     type: Date,
     default: Date.now,

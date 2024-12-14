@@ -18,6 +18,7 @@ import {
 import { Helmet } from "react-helmet-async";
 import axios from "axios";
 import LoginRequired from "../Components/LoginRequired";
+import ViewPopup from "../Components/ViewPopup";
 
 const PropertyDetails = ({ properties, loggedIn }) => {
   const { id } = useParams();
@@ -39,17 +40,20 @@ const PropertyDetails = ({ properties, loggedIn }) => {
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showViewPopup, setShowViewPopup] = useState(true);
 
   useEffect(() => {
     const loadPropertyData = async () => {
       if (location.state && location.state.propertyData) {
         setPropertyData(location.state.propertyData);
+        checkAndShowViewPopup();
       } else {
         try {
           const response = await axios.get(
             `http://localhost:4000/api/properties/${id}`
           );
           setPropertyData(response.data);
+          checkAndShowViewPopup();
         } catch (error) {
           console.error("Error fetching property:", error);
           navigate("/buy");
@@ -102,6 +106,15 @@ const PropertyDetails = ({ properties, loggedIn }) => {
     } catch (error) {
       console.error("Error recording view:", error);
     }
+  };
+
+  const checkAndShowViewPopup = () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (!userData) {
+      setShowViewPopup(false);
+      return;
+    }
+    setShowViewPopup(true);
   };
 
   if (!loggedIn) {
@@ -556,6 +569,9 @@ const PropertyDetails = ({ properties, loggedIn }) => {
               </form>
             </div>
           </div>
+        )}
+        {showViewPopup && loggedIn && (
+          <ViewPopup onClose={() => setShowViewPopup(false)} propertyId={id} />
         )}
       </div>
     </>

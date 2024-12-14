@@ -12,6 +12,7 @@ const {
   addToCart,
   removeFromCart,
   getCart,
+  checkExistingView,
 } = require("../controllers/property.controller.js");
 
 // Existing property routes
@@ -67,8 +68,14 @@ router.get(
 router.post(
   "/:propertyId/views",
   asyncHandler(async (req, res) => {
-    const { userId } = req.body;
+    const { userId, phoneNumber } = req.body;
     const propertyId = req.params.propertyId;
+
+    if (!phoneNumber) {
+      return res.status(400).json({
+        error: "Phone number is required",
+      });
+    }
 
     // Check if view already exists
     const existingView = await PropertyView.findOne({
@@ -84,10 +91,11 @@ router.post(
     const view = await PropertyView.create({
       propertyId,
       userId,
+      phoneNumber,
       viewedAt: new Date(),
     });
 
-    // Update property isViewed status and add view reference
+    // Update property isViewed status
     await Property.findByIdAndUpdate(propertyId, {
       isViewed: true,
       $push: { views: view._id },
@@ -138,5 +146,6 @@ router.delete("/:id", deleteproperty);
 router.post("/cart/add", addToCart);
 router.post("/cart/remove", removeFromCart);
 router.get("/cart/:userId", getCart);
+router.get("/check-view/:propertyId/:userId", checkExistingView);
 
 module.exports = router;
