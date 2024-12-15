@@ -14,8 +14,7 @@ const sendOTP = async (phoneNumber) => {
       );
     }
 
-    const url = `https://2factor.in/API/V1/${API_KEY}/SMS/${phoneNumber}/AUTOGEN/Midland`;
-    console.log("Making request to:", url);
+    const url = `https://2factor.in/API/V1/${API_KEY}/SMS/${phoneNumber}/AUTOGEN/midland`;
 
     const response = await axios.get(url);
     console.log("2Factor API Response:", response.data);
